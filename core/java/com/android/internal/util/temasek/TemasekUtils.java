@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui;
 
-import android.test.AndroidTestCase;
+package com.android.internal.util.temasek;
 
-/**
- * Base class that does System UI specific setup.
- */
-public class SysuiTestCase extends AndroidTestCase {
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        // Mockito stuff.
-        System.setProperty("dexmaker.dexcache", mContext.getCacheDir().getPath());
-        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+import android.content.Context;
+import android.content.res.Resources;
+import android.net.ConnectivityManager;
+
+import java.util.Locale;
+
+public class TemasekUtils {
+
+
+    public static boolean isChineseLanguage() {
+        return Resources.getSystem().getConfiguration().locale.getLanguage().startsWith(
+                Locale.CHINESE.getLanguage());
     }
+
 }
