@@ -45,7 +45,7 @@ import cyanogenmod.app.StatusBarPanelCustomTile;
 public class CellularTile extends QSTile<QSTile.SignalState> {
 
     private static final Intent DATA_USAGE_SETTINGS = new Intent().setComponent(new ComponentName(
-            "com.android.settings", "com.android.settings.Settings$DataUsageSummaryActivity"));
+			"com.android.settings", "com.android.settings.Settings$DataUsageSummaryActivity"));           
     private static final Intent MOBILE_NETWORK_SETTINGS = new Intent(Intent.ACTION_MAIN)
             .setComponent(new ComponentName("com.android.phone",
                     "com.android.phone.MobileNetworkSettings"));
@@ -100,9 +100,14 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
 
     @Override
     protected void handleClick() {
+        boolean enabled = mDataController.isMobileDataEnabled();
         MetricsLogger.action(mContext, getMetricsCategory());
         if (mDataController.isMobileDataSupported()) {
-            showDetail(true);
+            if (!enabled) {
+                mDataController.setMobileDataEnabled(true);
+            } else {
+                mDataController.setMobileDataEnabled(false);
+            }
         } else {
             mHost.startActivityDismissingKeyguard(DATA_USAGE_SETTINGS);
         }
@@ -110,15 +115,20 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
 
     @Override
     protected void handleSecondaryClick() {
-        handleClick();
+        if (mDataController.isMobileDataSupported()) {
+            showDetail(true);
+        } else {
+            mHost.startActivityDismissingKeyguard(MOBILE_NETWORK_SETTINGS);
+        }
     }
 
     @Override
     protected void handleLongClick() {
-        if (mTelephonyManager.getDefault().getPhoneCount() > 1) {
-            mHost.startActivityDismissingKeyguard(MOBILE_NETWORK_SETTINGS_MSIM);
+		MetricsLogger.action(mContext, getMetricsCategory());
+        if (mDataController.isMobileDataSupported()) {
+            showDetail(true);
         } else {
-            mHost.startActivityDismissingKeyguard(MOBILE_NETWORK_SETTINGS);
+            mHost.startActivityDismissingKeyguard(DATA_USAGE_SETTINGS);
         }
     }
 
